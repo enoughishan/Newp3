@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASHAConnect - Community Health Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        :root {
+            --primary: #4A90E2;
+            --primary-light: #E8F2FF;
+            --primary-dark: #2C6CB0;
+            --secondary: #7ED321;
+            --accent: #FF6B6B;
+            --success: #50C878;
+            --warning: #FFA500;
+            --danger: #FF4757;
+            --dark: #2C3E50;
+            --light: #F9FAFB;
+            --gray: #95A5A6;
+            --white: #FFFFFF;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --radius: 16px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--white);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: var(--white);
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Welcome Screen Styles */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-screen::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 8s infinite linear;
+        }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(0.8); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(0.8); }
+        }
+
+        .welcome-logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            z-index: 1;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .welcome-title {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            z-index: 1;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .welcome-subtitle {
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 80%;
+            z-index: 1;
+        }
+
+        .welcome-tips {
+            margin-top: 2rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+            z-index: 1;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .welcome-tips::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--secondary);
+        }
+
+        .welcome-tips h3 {
+            margin-bottom: 0.8rem;
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .welcome-tips ul {
+            text-align: left;
+            padding-left: 1.5rem;
+        }
+
+        .welcome-tips li {
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .welcome-tips li::before {
+            content: '•';
+            color: var(--secondary);
+            font-weight: bold;
+            position: absolute;
+            left: -1rem;
+        }
+
+        /* Login Screen Styles */
+        .login-screen {
+            padding: 2rem;
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+        }
+
+        .login-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--white);
+            font-size: 1.8rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .login-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .login-option {
+            padding: 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .login-option:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .login-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .otp-section {
+            display: none;
+            margin-top: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Language Selection Styles */
+        .language-screen {
+            padding: 2rem;
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+        }
+
+        .language-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--white);
+            font-size: 1.8rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .language-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .language-option {
+            padding: 1.5rem 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .language-option:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        /* Main Dashboard Styles */
+        .dashboard {
+            display: none;
+        }
+
+        /* Header Styles */
+        .app-header {
+            background-color: var(--white);
+            color: var(--primary-dark);
+            padding: 1.2rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .app-logo i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .app-logo h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            color: var(--primary-dark);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-actions i {
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary);
+        }
+
+        .header-actions i:hover {
+            transform: scale(1.2);
+            color: var(--primary-dark);
+        }
+
+        /* Navigation Styles */
+        .app-nav {
+            display: flex;
+            background-color: var(--white);
+            border-bottom: 1px solid #eee;
+            overflow-x: auto;
+            scrollbar-width: none;
+            position: sticky;
+            top: 68px;
+            z-index: 99;
+        }
+
+        .app-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-item {
+            padding: 14px 16px;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gray);
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Main Content Styles */
+        .app-main {
+            padding: 1.5rem;
+            padding-bottom: 80px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .section-header p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+            border-left: 4px solid var(--primary);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary-light), var(--white));
+            color: var(--primary-dark);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--primary-light);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.05), rgba(255,255,255,0));
+            z-index: 1;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            position: relative;
+            z-index: 2;
+            color: var(--dark);
+        }
+
+        /* Task Cards */
+        .task-card {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-left: 4px solid var(--primary);
+        }
+
+        .task-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--dark);
+        }
+
+        .task-priority {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .priority-high {
+            background-color: rgba(255, 107, 107, 0.2);
+            color: var(--danger);
+        }
+
+        .priority-medium {
+            background-color: rgba(255, 165, 0, 0.2);
+            color: var(--warning);
+        }
+
+        .priority-low {
+            background-color: rgba(126, 211, 33, 0.2);
+            color: var(--success);
+        }
+
+        .task-details {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 0.8rem;
+        }
+
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Patient List Styles */
+        .patient-list {
+            list-style: none;
+        }
+
+        .patient-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: var(--transition);
+            border-radius: var(--radius);
+        }
+
+        .patient-item:hover {
+            background-color: #f9f9f9;
+            transform: translateX(5px);
+        }
+
+        .patient-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: bold;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .patient-info {
+            flex: 1;
+        }
+
+        .patient-name {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .patient-details {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .patient-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .patient-actions i {
+            color: var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .patient-actions i:hover {
+            transform: scale(1.2);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: var(--white);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background-color: #6bbf1d;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: #ff3742;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Daily Checklist Styles */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+
+        .checklist-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .checklist-checkbox {
+            margin-right: 1rem;
+        }
+
+        .checklist-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+        }
+
+        .checklist-content {
+            flex: 1;
+        }
+
+        .checklist-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .checklist-details {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .checklist-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .map-preview {
+            height: 150px;
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            border-radius: var(--radius);
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .map-preview:hover {
+            background: linear-gradient(135deg, #e0e0e0, #d0d0d0);
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .filter-option {
+            padding: 8px 16px;
+            background-color: var(--light);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-option.active {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        /* Support Styles */
+        .support-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .support-option {
+            padding: 1.5rem 1rem;
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        .support-option:hover {
+            background-color: var(--primary-light);
+            color: var(--white);
+            transform: translateY(-5px);
+        }
+
+        .support-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .support-option:hover i {
+            color: var(--white);
+        }
+
+        /* Resources Styles */
+        .resource-categories {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .resource-category {
+            padding: 1.5rem 1rem;
+            background: linear-gradient(135deg, var(--light), #e0e0e0);
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .resource-category:hover {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: var(--white);
+            transform: translateY(-5px);
+        }
+
+        .resource-category i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--white);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 480px;
+            margin: 0 auto;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--gray);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 5px;
+            border-radius: var(--radius);
+        }
+
+        .nav-btn i {
+            font-size: 1.2rem;
+            margin-bottom: 3px;
+        }
+
+        .nav-btn.active {
+            color: var(--primary);
+            background-color: rgba(74, 144, 226, 0.1);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Voice Input */
+        .voice-input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .voice-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .voice-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .voice-btn.recording {
+            background-color: var(--danger);
+            animation: pulse 1s infinite;
+        }
+
+        .voice-indicator {
+            flex: 1;
+            height: 8px;
+            background-color: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .voice-level {
+            height: 100%;
+            width: 0%;
+            background-color: var(--success);
+            transition: width 0.1s ease;
+        }
+
+        /* Photo Capture */
+        .photo-capture-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .photo-preview {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .photo-preview:hover {
+            background: linear-gradient(135deg, #e0e0e0, #d0d0d0);
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Sync Status */
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background-color: var(--primary-light);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .sync-status.offline {
+            background-color: #ffeaa7;
+        }
+
+        .sync-status.syncing {
+            background-color: #a5d8ff;
+        }
+
+        .sync-icon {
+            font-size: 1.2rem;
+        }
+
+        .sync-text {
+            font-size: 0.9rem;
+        }
+
+        /* Language Selector */
+        .language-selector {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius);
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .language-selector:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            height: 6px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--success);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 480px) {
+            .app-container {
+                box-shadow: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .support-options, .resource-categories {
+                grid-template-columns: 1fr;
+            }
+            
+            .welcome-title {
+                font-size: 1.8rem;
+            }
+            
+            .welcome-logo {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Welcome Screen -->
+        <div class="welcome-screen animate__animated animate__fadeIn" id="welcome-screen">
+            <div class="welcome-logo">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <h1 class="welcome-title">ASHAConnect</h1>
+            <p class="welcome-subtitle">Your dedication empowers lives. Log in to continue making a difference in community health.</p>
+            
+            <div class="welcome-tips animate__animated animate__fadeInUp">
+                <h3>Health Tips for Today</h3>
+                <ul>
+                    <li>Ensure pregnant women take iron supplements regularly</li>
+                    <li>Check for signs of malnutrition in children under 5</li>
+                    <li>Promote handwashing with soap to prevent infections</li>
+                    <li>Encourage antenatal checkups during first trimester</li>
+                </ul>
+            </div>
+            
+            <button class="btn animate__animated animate__pulse animate__infinite" id="get-started-btn" style="margin-top: 2rem; animation-duration: 2s;">Get Started</button>
+        </div>
+
+        <!-- Login Screen -->
+        <div class="login-screen" id="login-screen">
+            <h2 class="login-title">Welcome Back!</h2>
+            <p class="login-subtitle">Your dedication empowers lives. Log in to continue making a difference in community health.</p>
+            
+            <div class="login-options">
+                <div class="login-option animate__animated" id="biometric-login">
+                    <i class="fas fa-fingerprint"></i>
+                    <div>Biometric Login</div>
+                </div>
+                
+                <div class="login-option animate__animated" id="mobile-login">
+                    <i class="fas fa-mobile-alt"></i>
+                    <div>OTP Login</div>
+                </div>
+            </div>
+            
+            <div class="otp-section" id="otp-section">
+                <div class="form-group">
+                    <label class="form-label">Enter Mobile Number</label>
+                    <input type="tel" class="form-control" placeholder="Enter your mobile number">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Enter OTP</label>
+                    <input type="text" class="form-control" placeholder="Enter OTP">
+                </div>
+                
+                <button class="btn" id="verify-otp">Verify OTP</button>
+            </div>
+            
+            <div class="language-selector" id="login-language">
+                <i class="fas fa-globe"></i> Select Language
+            </div>
+        </div>
+
+        <!-- Language Selection Screen -->
+        <div class="language-screen" id="language-screen">
+            <h2 class="language-title">Select Language</h2>
+            
+            <div class="language-options">
+                <div class="language-option animate__animated" data-lang="hindi">हिन्दी (Hindi)</div>
+                <div class="language-option animate__animated" data-lang="bengali">বাংলা (Bengali)</div>
+                <div class="language-option animate__animated" data-lang="telugu">తెలుగు (Telugu)</div>
+                <div class="language-option animate__animated" data-lang="marathi">मराठी (Marathi)</div>
+                <div class="language-option animate__animated" data-lang="tamil">தமிழ் (Tamil)</div>
+                <div class="language-option animate__animated" data-lang="urdu">اردو (Urdu)</div>
+                <div class="language-option animate__animated" data-lang="gujarati">ગુજરાતી (Gujarati)</div>
+                <div class="language-option animate__animated" data-lang="english">English</div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard" id="dashboard">
+            <!-- App Header -->
+            <header class="app-header">
+                <div class="app-logo">
+                    <i class="fas fa-heartbeat"></i>
+                    <h1>ASHAConnect</h1>
+                </div>
+                <div class="header-actions">
+                    <i class="fas fa-bell" id="notifications-btn"></i>
+                    <i class="fas fa-sync-alt" id="sync-btn"></i>
+                    <i class="fas fa-globe" id="language-btn"></i>
+                </div>
+            </header>
+
+            <!-- Sync Status -->
+            <div class="sync-status offline" id="sync-status">
+                <i class="fas fa-wifi sync-icon"></i>
+                <span class="sync-text">Offline - Data will sync when connection is restored</span>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="app-nav">
+                <div class="nav-item active" data-target="home">Home</div>
+                <div class="nav-item" data-target="patient-register">Patient Register</div>
+                <div class="nav-item" data-target="daily-checklist">Daily Checklist</div>
+                <div class="nav-item" data-target="support">Support</div>
+                <div class="nav-item" data-target="resources">Resources</div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="app-main">
+                <!-- Home Section -->
+                <section id="home" class="section active">
+                    <div class="section-header animate__animated animate__fadeIn">
+                        <h2>Hello, ASHA Worker!</h2>
+                        <p>Important: New patient survey guidelines released.</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card animate__animated animate__fadeInLeft">
+                            <div class="stat-value">24</div>
+                            <div class="stat-label">Patients Today</div>
+                        </div>
+                        <div class="stat-card animate__animated animate__fadeInRight">
+                            <div class="stat-value">156</div>
+                            <div class="stat-label">Total Patients</div>
+                        </div>
+                        <div class="stat-card animate__animated animate__fadeInLeft">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Pending Sync</div>
+                        </div>
+                        <div class="stat-card animate__animated animate__fadeInRight">
+                            <div class="stat-value">98%</div>
+                            <div class="stat-label">Target Achieved</div>
+                        </div>
+                    </div>
+
+                    <div class="card animate__animated animate__fadeInUp">
+                        <div class="card-header">
+                            <h3 class="card-title">Today's Critical Tasks</h3>
+                        </div>
+                        
+                        <div class="task-card">
+                            <div class="task-header">
+                                <div class="task-title">Vaccination Reminder</div>
+                                <div class="task-priority priority-high">High Risk</div>
+                            </div>
+                            <div class="task-details">Baby Rina - Due: Today</div>
+                        </div>
+                        
+                        <div class="task-card">
+                            <div class="task-header">
+                                <div class="task-title">Maternal Check-up</div>
+                                <div class="task-priority priority-medium">Medium Risk</div>
+                            </div>
+                            <div class="task-details">Priya Sharma - Due: Tomorrow</div>
+                        </div>
+                        
+                        <div class="task-card">
+                            <div class="task-header">
+                                <div class="task-title">Fever Follow-up</div>
+                                <div class="task-priority priority-low">Low Risk</div>
+                            </div>
+                            <div class="task-details">Amit Kumar - Due: 2 Days</div>
+                        </div>
+                    </div>
+
+                    <div class="card animate__animated animate__fadeInUp">
+                        <div class="card-header">
+                            <h3 class="card-title">Patient Spotlight</h3>
+                        </div>
+                        
+                        <div class="patient-item">
+                            <div class="patient-avatar">BS</div>
+                            <div class="patient-info">
+                                <div class="patient-name">Baby of Seema</div>
+                                <div class="patient-details">Milestone Achieved: Fully Immunized!</div>
+                            </div>
+                            <div class="patient-actions">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="patient-item">
+                            <div class="patient-avatar">RD</div>
+                            <div class="patient-info">
+                                <div class="patient-name">Rani Devi</div>
+                                <div class="patient-details">Health Progress: Successfully Completed Ante Natal Care</div>
+                            </div>
+                            <div class="patient-actions">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Patient Register Section -->
+                <section id="patient-register" class="section">
+                    <div class="section-header animate__animated animate__fadeIn">
+                        <h2>Patient Register</h2>
+                        <p>Add new patients and manage health records</p>
+                    </div>
+
+                    <div class="card animate__animated animate__fadeInUp">
+                        <div class="card-header">
+                            <h3 class="card-title">Add New Patient</h3>
+                        </div>
+                        <form id="patient-form">
+                            <div class="form-group">
+                                <label class="form-label">Full Name</label>
+                                <div class="voice-input-container">
+                                    <input type="text" class="form-control" placeholder="Enter patient's full name">
+                                    <button type="button" class="voice-btn">
+                                        <i class="fas fa-microphone"></i>
+                                    </button>
+                                </div>
+                                <div class="voice-indicator">
+                                    <div class="voice-level"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Age</label>
+                                <input type="number" class="form-control" placeholder="Enter age">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Gender</label>
+                                <select class="form-control">
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Height (cm)</label>
+                                <input type="number" class="form-control" placeholder="Enter height in cm">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Weight (kg)</label>
+                                <input type="number" class="form-control" placeholder="Enter weight in kg">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">BMI</label>
+                                <input type="text" class="form-control" placeholder="BMI will be calculated automatically" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Family Details</label>
+                                <textarea class="form-control" rows="2" placeholder="Enter family details"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Chronic Illness</label>
+                                <input type="text" class="form-control" placeholder="Enter any chronic illnesses">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Allergies</label>
+                                <input type="text" class="form-control" placeholder="Enter any allergies">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" rows="2" placeholder="Enter patient's address"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Pregnancy Month (if applicable)</label>
+                                <input type="number" class="form-control" placeholder="Enter pregnancy month">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Last Vaccine Date</label>
+                                <input type="date" class="form-control">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Past Medical History</label>
+                                <textarea class="form-control" rows="3" placeholder="Add past medical history"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Medical Reports</label>
+                                <div class="photo-capture-container">
+                                    <div class="photo-preview">
+                                        <i class="fas fa-camera"></i>
+                                        <span>No document captured</span>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary">
+                                        <i class="fas fa-camera"></i> Capture Document
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn">Save Patient Record</button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Daily Checklist Section -->
+                <section id="daily-checklist" class="section">
+                    <div class="section-header animate__animated animate__fadeIn">
+                        <h2>Daily Checklist</h2>
+                        <p>Your tasks and visits for today</p>
+                    </div>
+
+                    <div class="filter-options">
+                        <div class="filter-option active">All</div>
+                        <div class="filter-option">Pregnant Women</div>
+                        <div class="filter-option">Children</div>
+                        <div class="filter-option">Elderly</div>
+                        <div class="filter-option">Chronic Illness</div>
+                    </div>
+
+                    <div class="card animate__animated animate__fadeInUp">
+                        <div class="card-header">
+                            <h3 class="card-title">Today's Visits</h3>
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox">
+                                <input type="checkbox">
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Rohit Kumar - Blood Pressure Check</div>
+                                <div class="checklist-details">10:30 AM • House No. 45, Sector B</div>
+                                <div class="map-preview">
+                                    <i class="fas fa-map-marker-alt"></i> View on Map
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox">
+                                <input type="checkbox">
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Sunita Mehta - Antenatal Checkup</div>
+                                <div class="checklist-details">11:45 AM • House No. 12, Sector A</div>
+                                <div class="map-preview">
+                                    <i class="fas fa-map-marker-alt"></i> View on Map
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox">
+                                <input type="checkbox">
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Anita Patel - Child Nutrition Assessment</div>
+                                <div class="checklist-details">2:15 PM • House No. 78, Sector C</div>
+                                <div class="map-preview">
+                                    <i class="fas fa-map-marker-alt"></i> View on Map
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card animate__animated animate__fadeInUp">
+                        <div class="card-header">
+                            <h3 class="card-title">Other Tasks</h3>
+                        </div>
+                        
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox">
+                                <input type="checkbox">
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Submit weekly report</div>
+                            </div>
+                        </div>
+                        
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox">
+                                <input type="checkbox">
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Restock medical supplies</div>
+                            </div>
+                        </div>
+                        
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox">
+                                <input type="checkbox">
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Attend PHC meeting at 4 PM</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Support Section -->
+                <section id="support" class="section">
+                    <div class="section-header animate__animated animate__fadeIn">
+                        <h2>Support</h2>
+                        <p>Get help and contact PHC staff</p>
+                    </div>
+
+                    <div class="support-options">
+                        <div class="support-option animate__animated animate__fadeInLeft">
+                            <i class="fas fa-phone-alt"></i>
+                            <div>Emergency Contact</div>
+                        </div>
+                        <div class="support-option animate__animated animate__fadeInRight">
+                            <i class="fas fa-comment-medical"></i>
+                            <div>Medical Advice</div>
+                        </div>
+                        <div class="support-option animate__animated animate__fadeInLeft">
+                            <i class="fas fa-hands-helping"></i>
+                            <div>PHC Support</div>
+                        </div>
+                        <div class="support-option animate__animated animate__fadeInRight">
+                            <i class="fas fa-tools"></i>
+                            <div>Technical Help</div>
+                        </div>
+                    </div>
+
+                    <div class="card animate__animated animate__fadeInUp">
+                        <div class="card-header">
+                            <h3 class="card-title">Direct PHC Contact</h3>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Select PHC Staff</label>
+                            <select class="form-control">
+                                <option value="">Choose a staff member</option>
+                                <option value="doctor">Dr. Sharma - Medical Officer</option>
+                                <option value="nurse">Sister Meera - Staff Nurse</option>
+                                <option value="supervisor">Mr. Kumar - Supervisor</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Message</label>
+                            <textarea class="form-control" rows="4" placeholder="Type your message here"></textarea>
+                        </div>
+                        
+                        <button class="btn">Send Message</button>
+                    </div>
+                </section>
+
+                <!-- Resources Section -->
+                <section id="resources" class="section">
+                    <div class="section-header animate__animated animate__fadeIn">
+                        <h2>Resources</h2>
+                        <p>Training materials and reference guides</p>
+                    </div>
+
+                    <div class="resource-categories">
+                        <div class="resource-category animate__animated animate__fadeInLeft">
+                            <i class="fas fa-book-medical"></i>
+                            <div>Health Guides</div>
+                        </div>
+                        <div class="resource-category animate__animated animate__fadeInRight">
+                            <i class="fas fa-video"></i>
+                            <div>Training Videos</div>
+                        </div>
+                        <div class="resource-category animate__animated animate__fadeInLeft">
+                            <i class="fas fa-file-pdf"></i>
+                            <div>Protocols</div>
+                        </div>
+                        <div class="resource-category animate__animated animate__fadeInRight">
+                            <i class="fas fa-chart-line"></i>
+                            <div>Performance Tips</div>
+                        </div>
+                    </div>
+
+                    <div class="card animate__animated animate__fadeInUp">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Training Materials</h3>
+                        </div>
+                        <ul class="patient-list">
+                            <li class="patient-item">
+                                <div class="patient-avatar"><i class="fas fa-video"></i></div>
+                                <div class="patient-info">
+                                    <div class="patient-name">Antenatal Care Best Practices</div>
+                                    <div class="patient-details">Video • 15 min • Updated 2 days ago</div>
+                                </div>
+                                <div class="patient-actions">
+                                    <i class="fas fa-download"></i>
+                                </div>
+                            </li>
+                            <li class="patient-item">
+                                <div class="patient-avatar"><i class="fas fa-file-pdf"></i></div>
+                                <div class="patient-info">
+                                    <div class="patient-name">Child Immunization Schedule</div>
+                                    <div class="patient-details">PDF • 5 pages • Updated 1 week ago</div>
+                                </div>
+                                <div class="patient-actions">
+                                    <i class="fas fa-download"></i>
+                                </div>
+                            </li>
+                            <li class="patient-item">
+                                <div class="patient-avatar"><i class="fas fa-video"></i></div>
+                                <div class="patient-info">
+                                    <div class="patient-name">Malnutrition Identification</div>
+                                    <div class="patient-details">Video • 12 min • Updated 3 weeks ago</div>
+                                </div>
+                                <div class="patient-actions">
+                                    <i class="fas fa-download"></i>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav">
+                <div class="nav-btn active" data-target="home">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </div>
+                <div class="nav-btn" data-target="patient-register">
+                    <i class="fas fa-user-injured"></i>
+                    <span>Patients</span>
+                </div>
+                <div class="nav-btn" data-target="daily-checklist">
+                    <i class="fas fa-tasks"></i>
+                    <span>Checklist</span>
+                </div>
+                <div class="nav-btn" data-target="support">
+                    <i class="fas fa-headset"></i>
+                    <span>Support</span>
+                </div>
+                <div class="nav-btn" data-target="resources">
+                    <i class="fas fa-book"></i>
+                    <span>Resources</span>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        // Application Flow
+        document.addEventListener('DOMContentLoaded', function() {
+            // Screen elements
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const loginScreen = document.getElementById('login-screen');
+            const languageScreen = document.getElementById('language-screen');
+            const dashboard = document.getElementById('dashboard');
+            
+            // Welcome screen to login
+            document.getElementById('get-started-btn').addEventListener('click', function() {
+                welcomeScreen.style.display = 'none';
+                loginScreen.style.display = 'flex';
+                
+                // Add animations to login options
+                document.querySelectorAll('.login-option').forEach((option, index) => {
+                    setTimeout(() => {
+                        option.classList.add('animate__fadeInUp');
+                    }, index * 200);
+                });
+            });
+            
+            // Login options
+            document.getElementById('biometric-login').addEventListener('click', function() {
+                // Simulate biometric authentication
+                showNotification('Biometric authentication would be triggered here');
+                // After successful authentication
+                loginScreen.style.display = 'none';
+                languageScreen.style.display = 'flex';
+                
+                // Add animations to language options
+                document.querySelectorAll('.language-option').forEach((option, index) => {
+                    setTimeout(() => {
+                        option.classList.add('animate__fadeInUp');
+                    }, index * 100);
+                });
+            });
+            
+            document.getElementById('mobile-login').addEventListener('click', function() {
+                document.getElementById('otp-section').style.display = 'block';
+            });
+            
+            document.getElementById('verify-otp').addEventListener('click', function() {
+                // Simulate OTP verification
+                showNotification('OTP verification would happen here');
+                // After successful verification
+                loginScreen.style.display = 'none';
+                languageScreen.style.display = 'flex';
+                
+                // Add animations to language options
+                document.querySelectorAll('.language-option').forEach((option, index) => {
+                    setTimeout(() => {
+                        option.classList.add('animate__fadeInUp');
+                    }, index * 100);
+                });
+            });
+            
+            // Language selection
+            const languageOptions = document.querySelectorAll('.language-option');
+            languageOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    showNotification(`Language set to: ${selectedLang}`);
+                    // After language selection
+                    languageScreen.style.display = 'none';
+                    dashboard.style.display = 'block';
+                });
+            });
+            
+            // Dashboard Navigation
+            // Top navigation
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    
+                    // Update active nav item
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === target) {
+                            section.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // Bottom navigation
+            const bottomNavItems = document.querySelectorAll('.bottom-nav .nav-btn');
+            
+            bottomNavItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    
+                    bottomNavItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update top nav and section
+                    navItems.forEach(nav => {
+                        nav.classList.remove('active');
+                        if (nav.getAttribute('data-target') === target) {
+                            nav.classList.add('active');
+                        }
+                    });
+                    
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === target) {
+                            section.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // Sync button functionality
+            const syncBtn = document.getElementById('sync-btn');
+            const syncStatus = document.getElementById('sync-status');
+            
+            syncBtn.addEventListener('click', function() {
+                // Simulate sync process
+                syncStatus.innerHTML = '<i class="fas fa-sync fa-spin sync-icon"></i><span class="sync-text">Syncing data with server...</span>';
+                syncStatus.classList.remove('offline');
+                syncStatus.classList.add('syncing');
+                
+                setTimeout(function() {
+                    syncStatus.innerHTML = '<i class="fas fa-check-circle sync-icon" style="color: var(--success);"></i><span class="sync-text">Data synced successfully!</span>';
+                    
+                    setTimeout(function() {
+                        syncStatus.innerHTML = '<i class="fas fa-wifi sync-icon"></i><span class="sync-text">Offline - Data will sync when connection is restored</span>';
+                        syncStatus.classList.add('offline');
+                        syncStatus.classList.remove('syncing');
+                    }, 3000);
+                }, 2000);
+            });
+            
+            // Voice input simulation
+            const voiceBtn = document.querySelector('.voice-btn');
+            const voiceLevel = document.querySelector('.voice-level');
+            
+            if (voiceBtn && voiceLevel) {
+                voiceBtn.addEventListener('click', function() {
+                    if (voiceBtn.classList.contains('recording')) {
+                        // Stop recording
+                        voiceBtn.classList.remove('recording');
+                        voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                        voiceLevel.style.width = '0%';
+                    } else {
+                        // Start recording
+                        voiceBtn.classList.add('recording');
+                        voiceBtn.innerHTML = '<i class="fas fa-stop"></i>';
+                        
+                        // Simulate voice input level
+                        let level = 0;
+                        const interval = setInterval(function() {
+                            if (level >= 100) {
+                                clearInterval(interval);
+                                return;
+                            }
+                            
+                            level += Math.random() * 10;
+                            if (level > 100) level = 100;
+                            voiceLevel.style.width = level + '%';
+                        }, 100);
+                    }
+                });
+            }
+            
+            // Photo capture simulation
+            const photoBtn = document.querySelector('.photo-capture-container .btn');
+            const photoPreview = document.querySelector('.photo-preview');
+            
+            if (photoBtn && photoPreview) {
+                photoBtn.addEventListener('click', function() {
+                    photoPreview.innerHTML = '<img src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Captured Photo">';
+                });
+            }
+            
+            // Language selector in dashboard
+            document.getElementById('language-btn').addEventListener('click', function() {
+                showNotification('Language selection dialog would appear here');
+            });
+            
+            // Notifications
+            document.getElementById('notifications-btn').addEventListener('click', function() {
+                showNotification('Notifications panel would open here');
+            });
+            
+            // Filter options in daily checklist
+            const filterOptions = document.querySelectorAll('.filter-option');
+            filterOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    filterOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Helper function to show notifications
+            function showNotification(message) {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: var(--primary);
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: var(--radius);
+                    box-shadow: var(--shadow);
+                    z-index: 1000;
+                    max-width: 80%;
+                    text-align: center;
+                    animation: slideIn 0.3s ease;
+                `;
+                notification.textContent = message;
+                
+                // Add to body
+                document.body.appendChild(notification);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, 3000);
+                
+                // Add keyframes for animation
+                if (!document.querySelector('#notification-styles')) {
+                    const style = document.createElement('style');
+                    style.id = 'notification-styles';
+                    style.textContent = `
+                        @keyframes slideIn {
+                            from { top: -50px; opacity: 0; }
+                            to { top: 20px; opacity: 1; }
+                        }
+                        @keyframes slideOut {
+                            from { top: 20px; opacity: 1; }
+                            to { top: -50px; opacity: 0; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
